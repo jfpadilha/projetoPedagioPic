@@ -101,8 +101,8 @@ testa_ad
 
 identifica_veiculo
     ;testa caminhao 4 eixos
-    call valor_isento
-    bsf ac
+    goto abrir_cancela
+    
 ;    movlw peso_veiculo
 ;    sublw 225
 ;    movwf valor_teste    

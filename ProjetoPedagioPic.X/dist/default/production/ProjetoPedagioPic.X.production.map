@@ -1,11 +1,11 @@
 MPLINK 5.08, LINKER
-Linker Map File - Created Sat Nov 21 16:26:35 2015
+Linker Map File - Created Sat Nov 21 16:31:32 2015
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
                 ---------  ---------  ---------  ---------  ---------
-                   .org_0       code   0x000000    program   0x00024a
-                   .cinit    romdata   0x000125    program   0x000004
+                   .org_0       code   0x000000    program   0x000248
+                   .cinit    romdata   0x000124    program   0x000004
 .config_2007_BUILD/DEFAULT/PRODUCTION/PROJETO       code   0x002007    program   0x000002
 
 
@@ -13,46 +13,46 @@ Linker Map File - Created Sat Nov 21 16:26:35 2015
                               Program Memory Usage 
                                Start         End      
                            ---------   ---------      
-                            0x000000    0x000126      
+                            0x000000    0x000125      
                             0x002007    0x002007      
-            296 out of 8454 program addresses used, program memory utilization is 3%
+            295 out of 8454 program addresses used, program memory utilization is 3%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-             _.org_0_0030   0x000030    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-            abrir_cancela   0x0000f4    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-          aguarda_estouro   0x0000e1    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-               atraso_lcd   0x00011a    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-         atraso_limpa_lcd   0x00011f    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-           devolve_moedas   0x0000e9    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-      escreve_comando_lcd   0x00010e    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-         escreve_dado_lcd   0x000114    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                espera_1s   0x0000dd    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-           fechar_cancela   0x0000fb    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+             _.org_0_002F   0x00002f    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+            abrir_cancela   0x0000f3    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+          aguarda_estouro   0x0000e0    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+               atraso_lcd   0x000119    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+         atraso_limpa_lcd   0x00011e    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+           devolve_moedas   0x0000e8    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+      escreve_comando_lcd   0x00010d    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+         escreve_dado_lcd   0x000113    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                espera_1s   0x0000dc    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+           fechar_cancela   0x0000fa    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
        identifica_veiculo   0x00002a    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-               inicia_lcd   0x000100    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+               inicia_lcd   0x0000ff    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
                    inicio   0x00001b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
     ler_entrada_analogica   0x00001b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                   ler_n5   0x00002e    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-        ler_valor_entrada   0x00002c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                limpa_lcd   0x00010a    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-            msg_bem_vindo   0x000087    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-       msg_cancela_aberta   0x0000bf    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                msg_troco   0x0000ad    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-           ret_atraso_lcd   0x00011c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-     ret_atraso_limpa_lcd   0x000121    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-             seta_valor10   0x00002c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-              seta_valor5   0x00002c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-              seta_valor7   0x00002c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                   ler_n5   0x00002d    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+        ler_valor_entrada   0x00002b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                limpa_lcd   0x000109    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+            msg_bem_vindo   0x000086    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+       msg_cancela_aberta   0x0000be    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                msg_troco   0x0000ac    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+           ret_atraso_lcd   0x00011b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+     ret_atraso_limpa_lcd   0x000120    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+             seta_valor10   0x00002b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+              seta_valor5   0x00002b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+              seta_valor7   0x00002b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
                  testa_ad   0x000020    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                 valor_10   0x000071    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                  valor_5   0x000049    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                  valor_7   0x00005d    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-              valor_falta   0x00009b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-             valor_isento   0x000031    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                 valor_10   0x000070    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                  valor_5   0x000048    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                  valor_7   0x00005c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+              valor_falta   0x00009a    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+             valor_isento   0x000030    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
 
 
 
@@ -63,32 +63,32 @@ Linker Map File - Created Sat Nov 21 16:26:35 2015
                    inicio   0x00001b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
                  testa_ad   0x000020    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
        identifica_veiculo   0x00002a    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-              seta_valor7   0x00002c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-              seta_valor5   0x00002c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-             seta_valor10   0x00002c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-        ler_valor_entrada   0x00002c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                   ler_n5   0x00002e    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-             _.org_0_0030   0x000030    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-             valor_isento   0x000031    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                  valor_5   0x000049    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                  valor_7   0x00005d    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                 valor_10   0x000071    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-            msg_bem_vindo   0x000087    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-              valor_falta   0x00009b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                msg_troco   0x0000ad    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-       msg_cancela_aberta   0x0000bf    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                espera_1s   0x0000dd    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-          aguarda_estouro   0x0000e1    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-           devolve_moedas   0x0000e9    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-            abrir_cancela   0x0000f4    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-           fechar_cancela   0x0000fb    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-               inicia_lcd   0x000100    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-                limpa_lcd   0x00010a    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-      escreve_comando_lcd   0x00010e    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-         escreve_dado_lcd   0x000114    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-               atraso_lcd   0x00011a    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-           ret_atraso_lcd   0x00011c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-         atraso_limpa_lcd   0x00011f    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
-     ret_atraso_limpa_lcd   0x000121    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+              seta_valor7   0x00002b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+              seta_valor5   0x00002b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+             seta_valor10   0x00002b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+        ler_valor_entrada   0x00002b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                   ler_n5   0x00002d    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+             _.org_0_002F   0x00002f    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+             valor_isento   0x000030    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                  valor_5   0x000048    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                  valor_7   0x00005c    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                 valor_10   0x000070    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+            msg_bem_vindo   0x000086    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+              valor_falta   0x00009a    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                msg_troco   0x0000ac    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+       msg_cancela_aberta   0x0000be    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                espera_1s   0x0000dc    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+          aguarda_estouro   0x0000e0    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+           devolve_moedas   0x0000e8    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+            abrir_cancela   0x0000f3    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+           fechar_cancela   0x0000fa    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+               inicia_lcd   0x0000ff    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+                limpa_lcd   0x000109    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+      escreve_comando_lcd   0x00010d    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+         escreve_dado_lcd   0x000113    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+               atraso_lcd   0x000119    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+           ret_atraso_lcd   0x00011b    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+         atraso_limpa_lcd   0x00011e    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
+     ret_atraso_limpa_lcd   0x000120    program     static /home/joao/Dropbox/Eletronica/micros/pic/projetoPedagioPic/ProjetoPedagioPic.X/ProjetoPedagioPic.asm
 
 
