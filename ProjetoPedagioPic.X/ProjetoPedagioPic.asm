@@ -1,29 +1,49 @@
-#include "p16f877a.inc"
+    ;balanca = 2
+    ;kit pedagio 1
+    
+    #include "p16f877a.inc"
 
-#define BANCO1	bsf STATUS, RP0
-#define BANCO0	bcf STATUS, RP0
-#define sp      RA2     ;sensor de peso
-#define n2      RD0
-#define n5      RD1
-#define rn
-#define ac      RE2
-#define sm      RC3
-#define lm      RC4
-#define la      RC5
+;Bancos
+    #define BANCO1	bsf STATUS, RP0
+    #define BANCO0	bcf STATUS, RP0
+
+;Entradas
+    #define sp      RA2     ;sensor de peso
+    #define n2      RD0
+    #define n5      RD1
+;Saidas
+    #define rn
+    #define ac      RE2
+    #define sm      RC3
+    #define lm      RC4
+    #define la      RB0
 
 ; __config 0xFFBA
  __CONFIG _FOSC_HS & _WDTE_OFF & _PWRTE_OFF & _BOREN_OFF & _LVP_ON & _CPD_OFF & _WRT_OFF & _CP_OFF
 
  CBLOCK 20h	    ; cria registradores apartir da 20
- contador
- contador2
-
+    valor_entrada
+    valor_salvo
+    valor_restante
+    valor_veiculo
+    qtd_troco
+    contador
+    contador2
  endc
 
  org 0
+ 
+ ;Inicializacoes
+    movlw 0
+    movwf valor_entrada
+    movwf valor_salvo
+    movwf valor_restante
+    movwf valor_veiculo
+    movwf qtd_troco
+    contador
+    contador2
 
  BANCO1
-
  movlw 0
  movwf TRISD		; porta D é saída
 
@@ -45,6 +65,14 @@
 
  call inicia_lcd
  call msg_bem_vindo
+ ;--------------
+ 
+ inicio
+    
+ 
+ 
+ 
+ ; -------------
  call espera_1s
  call limpa_lcd
  call valor_isento

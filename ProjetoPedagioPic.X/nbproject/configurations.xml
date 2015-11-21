@@ -13,6 +13,8 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>ProjetoPedagioPic.asm</itemPath>
+      <itemPath>8051.txt</itemPath>
+      <itemPath>primeiraAula.txt</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

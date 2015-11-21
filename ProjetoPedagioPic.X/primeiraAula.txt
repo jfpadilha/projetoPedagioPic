@@ -1,0 +1,62 @@
+
+
+1 - criar novo projeto (file - new project)
+2 - "Standar" e avançar
+3 - família 'midRange' e 'device = pic16f877A' e avançar
+4 - escolher simulador 'PICKIT2' avançar
+5 - 'MPASM' e avançar
+6 - nome do projeto
+7 - FINAL
+
+- new arquivo
+	'other'  e escolher 'Assember' e 'asmFile'
+	nome do arquivo e OK
+
+---------------------| GERAR LINHA DE CONFIGURAÇÃO |--------------------
+
+//para dizer qual maneira o chip vai funcionar
+//baixa tennsão, habilitar watdog, programação externa, 
+
+
+Windows - picmemori view - 
+	MODO XT
+	OFF
+	OFF
+	OFF
+	ON
+	OFF
+	OFF
+	OFF
+
+
+---------------------| INICIANDO O CÓDIGO |--------------------
+
+#include <p16F877A> //para dizer qual a biblioteca do tal pic vai estar inclusa
+
+ORG 0h
+
+bsf STATUS, RP0 //vai ir para o banco 1 (setar o RP0)
+movlw b*11110111* //agora pode escrever no TRIXb ou hex 0xF7, habilita o saida para o led L4 (move para o registr de trabalhoACC)
+movwf TRISB			//AGORA mover o valor para o pino
+
+//agora a lógica de ativar o bit para ver se ta ativado ou não
+bcf STATUS, RP0 //vai ir para o banco 0 (clear o RP0)
+//lógica de teste do botão
+volta
+	btfsc PORTB, 0 //ver se o bit 0 da porta B está apagado (se for zero pula 1 instrução próxima linha)
+	;bit ativo
+	goto setapino	;se for zero não vai executar essa linha
+	;bit zerado
+
+zerapino
+	bcf PORTB, 3
+	goto volta
+
+setapino
+	bsf PORTB, 3
+	goto volta
+
+end
+
+-> btfsc ; testa se for 1
+-> btfsc ; testa se for 1

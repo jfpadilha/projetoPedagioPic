@@ -1,0 +1,334 @@
+;display
+ORG 0
+    LCD_COMANDO		EQU 0FF10H
+    LCD_DADO		EQU 0FF11H
+    MOV TMOD,#11H					;AMBOS OS TIMERS NO MODO1=TEMPORIZADOR SINAL INT.
+    MOV TCON,#00        	        ;AMBOS 16 BITS RECARGA AUT - INICIALM. DESLIGADOS   
+    MOV R7,#160						;ATRASO DE 4000 MS SE R7=20(USAR R7 COMO  MULTIPLICADOR DE 50)
+    MOV R6,#80						;ATRASO DE 2000 MS SE R7=20(USAR R7 COMO  MULTIPLICADOR DE 50)
+    CODIGO_ALTA     EQU R2
+    CODIGO_BAIXA    EQU R3
+    
+;Entradas
+    S1       		EQU P1.0
+    S2        		EQU P1.1
+    S3       		EQU P1.2
+    S4				EQU P1.3
+    N2				EQU P1.4
+    N5				EQU P1.5
+
+;Saidas
+    RN        		EQU P1.6
+    AA        		EQU P1.7
+    SM        		EQU P3.2
+    LM        		EQU P3.3
+    LA        		EQU P3.5
+
+;manipulacao
+    VALOR_ENTRADA		EQU 110
+    VALOR_SALVO			EQU 111
+    VALOR_RESTANTE		EQU 112
+    VALOR_VEICULO		EQU 113
+    QTD_TROCO			EQU 114
+
+;inicializacoes
+    MOV VALOR_SALVO,	#0
+    MOV VALOR_RESTANTE, #0
+    MOV VALOR_ENTRADA,	#0
+    MOV QTD_TROCO, 		#0
+    MOV VALOR_VEICULO,	#0
+
+;comandos display
+	JMP 2500h
+
+ORG 2BH
+	JMP 202Bh
+	
+ORG 2500H	
+	MOV DPTR, #LCD_COMANDO
+	MOV A, #38h						; LCD 8 BITS 2 LINHAS
+	MOVX @DPTR, A
+	CALL ATRASO_LCD
+	
+	MOV DPTR, #LCD_COMANDO
+	MOV A, #38h						; LCD 8 BITS 2 LINHAS
+	MOVX @DPTR, A
+	CALL ATRASO_LCD
+	
+	MOV DPTR, #LCD_COMANDO
+	MOV A, #0Ch						; LCD ATIV SEM CURSOR
+	MOVX @DPTR, A
+	CALL ATRASO_LCD
+	
+	MOV DPTR, #LCD_COMANDO
+	MOV A, #06h						; LCD COM DESLOCADOR DO CURSOR AUTOMATICO
+	MOVX @DPTR, A
+	CALL ATRASO_LCD
+	
+	MOV DPTR, #LCD_COMANDO
+	MOV A, #1						; LIMPA LCD
+	MOVX @DPTR, A
+	CALL LIMPA_LCD
+	
+	CLR AA
+	CLR LM
+	SETB SM
+INICIO:	
+    JNB S1, INICIO                  ;se for zero volta inicio
+    MOV VALOR_SALVO,	#0
+    MOV VALOR_RESTANTE, #0
+    MOV VALOR_ENTRADA,	#0
+    MOV QTD_TROCO, 		#0
+    MOV VALOR_VEICULO,	#0
+
+    JB S4, SALTA_VALOR10            ;verifica caminhao
+    JB S3, SALTA_VALOR7             ;verifica van
+    JB S2, SALTA_VALOR5             ;verifica carro
+    JMP VALOR_ISENTO                ;moto isento
+
+;necessario para salto distante funcionar
+SALTA_VALOR10:
+    JMP VALOR_10
+SALTA_VALOR7:
+    JMP VALOR_7   
+SALTA_VALOR5:
+    JMP VALOR_5
+	
+LER_VALOR_ENTRADA:
+    JNB N2, LER_N5						;Desvio se bit = 0
+    MOV VALOR_ENTRADA, #2H
+    JMP VERIFICA_VALOR_ENTRADA
+LER_N5:
+    JNB N5, LER_VALOR_ENTRADA			;Desvio se bit = 0
+    MOV VALOR_ENTRADA, #5H
+    JMP VERIFICA_VALOR_ENTRADA
+   
+VERIFICA_VALOR_ENTRADA:
+    MOV A, VALOR_ENTRADA
+    ADD A, VALOR_SALVO
+    MOV VALOR_SALVO, A            		;atualizar valor salvo
+    CLR C
+    SUBB A, VALOR_VEICULO   
+    MOV VALOR_RESTANTE, A
+    JNC ATUALIZA_DISPLAY				;Desvio se CARRY = 0 (porque precisa de mais dinheiro)
+    JNZ VERIFICA_TROCO		            ;Desvio se A != 0
+    JMP ABRIR_CANCELA
+		
+ATUALIZA_DISPLAY:
+	CLR C
+	MOV A, #0		
+	SUBB A, VALOR_RESTANTE		;somar 0 no acumulador para deixar positivo
+	MOV VALOR_RESTANTE, A
+	
+	MOV DPTR, #LCD_DADO
+
+	MOV A, #VALOR_RESTANTE
+	MOVX @DPTR, A
+	CALL ATRASO_LCD
+
+	JMP VERIFICA_S1_A			;verificar S1
+
+VERIFICA_S1_A:
+    JB S1, LER_VALOR_ENTRADA    		;Desvio se bit = 1
+                                	
+    CALL ATRASO_LCD
+    MOV R2, #41							;limpar lcd
+    CALL VOLTA_ATRASO
+    JMP INICIO
+	
+VERIFICA_TROCO:
+    CLR C
+    MOV A, #0       
+    SUBB A, VALOR_RESTANTE        		;somar 0 no acumulador para deixar positivo
+    MOV VALOR_RESTANTE, A
+   
+    CLR C
+    MOV A, VALOR_VEICULO
+    SUBB A, VALOR_SALVO
+    MOV QTD_TROCO, A
+    JNZ DEVOLVE_MOEDAS
+    ;se passou abrir cancela
+	
+ABRIR_CANCELA:					;nao mudar de lugar
+	CALL ATRASO_LCD
+	MOV R2, #41	
+	CALL VOLTA_ATRASO			;limpar display
+	SETB AA						;abrir cancela
+
+VERIFICA_S1_B:
+	JB S1, VERIFICA_S1_B		;Desvio se bit = 1
+	CALL TEMPO_4S
+	JMP FECHA_CANCELA
+
+TEMPO_4S:
+	MOV TH0,#HIGH(65535-50000)	;Contador conta 50.000 vezeS X 1uS = 50mS
+	MOV TL0,#LOW(65535-50000)		          
+    SETB TR0					;AQUI O CONTADOR É LIGADO E COMEÇA A CONTAR		                              
+    JNB TF0,$					;ENQUANTO TF0=0 AINDA NÃO CONTOU 50mS		                            
+    CLR TF0						;RESETA O FLAG DE OVERFLOW = COMPLETOU A CONTAGEM DE 50mS					                              
+    DJNZ R7, TEMPO_4S			;REPETE A CONTAGEM DE DE 50mS POR MAIS 20 VEZES (VALOR DE R7)         	                                            
+    CLR TR0
+    RET
+	;JMP FECHA_CANCELA
+	
+DEVOLVE_MOEDAS:
+	SETB LM
+	JMP SEGUNDOS_1
+
+CONT_TROCO:
+	CLR LM
+	SETB SM
+	JMP SEGUNDOS_1
+CONT_TROCO1:
+	CLR SM
+	DEC A
+	JNZ DEVOLVE_MOEDAS
+	JMP ABRIR_CANCELA
+
+
+SEGUNDOS_1:
+	MOV TH0,#HIGH(65535-50000)	;Contador conta 50.000 vezeS X 1uS = 50mS
+	MOV TL0,#LOW(65535-50000)		          
+    SETB TR0					;AQUI O CONTADOR É LIGADO E COMEÇA A CONTAR		                              
+    JNB TF0,$					;ENQUANTO TF0=0 AINDA NÃO CONTOU 50mS		                            
+    CLR TF0						;RESETA O FLAG DE OVERFLOW = COMPLETOU A CONTAGEM DE 50mS					                              
+    DJNZ R6, TEMPO_4S			;REPETE A CONTAGEM DE DE 50mS POR MAIS 20 VEZES (VALOR DE R7)         	                                            
+    CLR TR0                	                                              
+    RET
+	JMP CONT_TROCO
+	
+SEGUNDOS_2:
+	MOV TH0,#HIGH(65535-50000)	;Contador conta 50.000 vezeS X 1uS = 50mS
+	MOV TL0,#LOW(65535-50000)		          
+    SETB TR0					;AQUI O CONTADOR É LIGADO E COMEÇA A CONTAR		                              
+    JNB TF0,$					;ENQUANTO TF0=0 AINDA NÃO CONTOU 50mS		                            
+    CLR TF0						;RESETA O FLAG DE OVERFLOW = COMPLETOU A CONTAGEM DE 50mS					                              
+    DJNZ R6, TEMPO_4S			;REPETE A CONTAGEM DE DE 50mS POR MAIS 20 VEZES (VALOR DE R7)         	                                            
+    CLR TR0                	                                              
+    RET
+	
+	JMP CONT_TROCO1
+
+FECHA_CANCELA:
+	CLR AA
+	JMP INICIO
+
+; ESCRITAS LCD
+VALOR_ISENTO:	
+	MOV DPTR, #MOTO
+	MOV A, DPL
+	MOV CODIGO_BAIXA, A				; SALVA POSICAO MEMORIA CODIGO
+	MOV A, DPH
+	MOV CODIGO_ALTA, A
+	
+	CLR A
+	MOV A, #0						;LE VALOR LISTA
+	MOVC A, @A+DPTR
+	INC DPTR
+	JZ  ABRIR_CANCELA				;Desvio se A = 0
+
+	MOV DPTR, #LCD_DADO
+	MOVX @DPTR, A
+	CALL ATRASO_LCD
+	JMP VALOR_ISENTO
+
+VALOR_5:	
+	MOV DPTR, #VALOR5
+		
+	MOV A, DPL
+	MOV CODIGO_BAIXA, A			; SALVA POSICAO MEMORIA CODIGO
+	MOV A, DPH
+	MOV CODIGO_ALTA, A
+	
+	CLR A
+	MOV A, #0					; LE VALOR LISTA 
+	MOVC A, @A+DPTR
+	INC DPTR
+	JZ  SAI_2
+
+	MOV DPTR, #LCD_DADO
+	MOVX @DPTR, A
+	MOV VALOR_VEICULO, #5H
+	JMP VERIFICA_VALOR_ENTRADA
+	CALL ATRASO_LCD
+	JMP VALOR_5
+	
+SAI_2:
+	JMP LER_VALOR_ENTRADA 			;EXECUTA ESTE COMANDO AO ACIONAR O SENSOR 1 
+		
+VALOR_7:	
+	MOV DPTR, #VALOR7
+		
+	MOV A, DPL
+	MOV CODIGO_BAIXA, A			; SALVA POSICAO MEMORIA CODIGO
+	MOV A, DPH
+	MOV CODIGO_ALTA, A
+	
+	CLR A
+	MOV A, #0					; LE VALOR LISTA 
+	MOVC A, @A+DPTR
+	INC DPTR
+	JZ  SAI_3
+
+	MOV DPTR, #LCD_DADO
+	MOVX @DPTR, A
+	MOV VALOR_VEICULO, #7H
+	JMP LER_VALOR_ENTRADA
+	CALL ATRASO_LCD
+	JMP VALOR_7
+	
+SAI_3:
+	JMP LER_VALOR_ENTRADA 			;EXECUTA ESTE COMANDO AO ACIONAR O SENSOR 1 
+	
+VALOR_10:	
+	MOV DPTR, #VALOR10
+		
+	MOV A, DPL
+	MOV CODIGO_BAIXA, A			; SALVA POSICAO MEMORIA CODIGO
+	MOV A, DPH
+	MOV CODIGO_ALTA, A
+	
+	CLR A
+	MOV A, #0					; LE VALOR LISTA 
+	MOVC A, @A+DPTR
+	INC DPTR
+	JZ  SAI_4
+
+	MOV DPTR, #LCD_DADO
+	MOVX @DPTR, A
+	MOV VALOR_VEICULO, #0AH	
+	JMP VERIFICA_VALOR_ENTRADA
+	CALL ATRASO_LCD
+	JMP VALOR_10
+	
+SAI_4:
+	JMP LER_VALOR_ENTRADA 			;EXECUTA ESTE COMANDO AO ACIONAR O SENSOR 1 
+		
+ATRASO_LCD:		; 40us
+	MOV R1, #18
+	DJNZ R1, $
+	RET
+	
+LIMPA_LCD:		; 41 X 40us = 1,65us
+	MOV R2, #41
+VOLTA_ATRASO:
+	CALL ATRASO_LCD
+	DJNZ R2, VOLTA_ATRASO
+	RET
+
+MOTO:
+	;DB 'MOTO ISENTA',0
+	DB 'M', 0
+	
+VALOR5:
+	;DB 'VALOR R$5,00',0 
+	DB '5', 0
+VALOR7:
+	;DB 'VALOR R$7,00',0 
+	DB '7', 0
+		
+VALOR10:
+	;DB 'VALOR R$10,00',0
+	DB '1', 0
+		
+END
