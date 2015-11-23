@@ -3,12 +3,15 @@
     
     #include "p16f877a.inc"
 
-;Bancos
+; __config 0xFFBA
+ __CONFIG _FOSC_HS & _WDTE_OFF & _PWRTE_OFF & _BOREN_OFF & _LVP_ON & _CPD_OFF & _WRT_OFF & _CP_OFF
+
+ ;Bancos
     #define BANCO1	bsf STATUS, RP0
     #define BANCO0	bcf STATUS, RP0
 
 ;Entradas
-    #define sp      PORTA, RA2     ;sensor de peso
+    #define sp      PORTA, RA2
     #define n2      PORTD, RD0
     #define n5      PORTD, RD1
 ;Saidas
@@ -18,10 +21,7 @@
     #define lm      PORTC, RC4
     #define la      PORTB, RB0
 
-; __config 0xFFBA
- __CONFIG _FOSC_HS & _WDTE_OFF & _PWRTE_OFF & _BOREN_OFF & _LVP_ON & _CPD_OFF & _WRT_OFF & _CP_OFF
-
- CBLOCK 20h	    ; cria registradores apartir da 20
+ CBLOCK 20h                         ; cria registradores apartir da 20
     valor_entrada
     valor_salvo
     valor_restante
@@ -34,7 +34,10 @@
  endc
 
  org 0
- 
+    BANCO1
+    call inicia_lcd
+    call msg_bem_vindo
+    
  ;Inicializacoes
     movlw 0
     movwf valor_entrada
@@ -42,25 +45,28 @@
     movwf valor_restante
     movwf valor_veiculo
     movwf valor_teste
-    movwf qtd_troco
- 
-
- BANCO1
+    movwf qtd_troco  
  
  ;DEFINIR SAIDAS
     movlw 0
     movwf TRISB             ; porta B é saída 
-    movlw b'00000111'       ; PSMODE = 0 para porta D ser I/O
+    movlw b'11101100'       ; PSMODE = 0 para porta D ser I/O
     movwf TRISE             ; bits 0 e 1 da porta E são saídas 
-    movlw b'00000111'       ; pinos configurados como digitais
+    movlw b'11101100'       ; pinos configurados como digitais
     movwf TRISC             ; bits 0 e 1 da porta E são saídas 
-    movlw b'00000111'       ; pinos configurados como digitais
+    movlw b'11101100'       ; pinos configurados como digitais
+    
+;DEFINIR ENTRADAS
+    movlw 1
+    movlw TRISD
+    movlw b'11111111'
+    movlw TRISA
+    movlw b'11111111'
     movwf ADCON1
 
-;------------------ 
- 
- movlw b'00000111'          ; timer 0 com clock interno e prescaler 256
- movwf	OPTION_REG
+;CONFIGURACAO PRESCALER
+    movlw b'00000111'          ; timer 0 com clock interno e prescaler 256
+    movwf	OPTION_REG
  
  BANCO0 
     movlw b'00110001'       ; timer 1 com clock interno e prescaler 8
@@ -72,13 +78,14 @@
     bcf lm
     bcf sm
     bcf la
- 
-  
+   
 inicio                    ;ver se tem erro
   
 ;configuracao pinos
 ler_entrada_analogica
     BANCO1
+    movwf 1
+    movwf TRISD
     movlw b'00000011'       ;pinos configurados para analogico
     movwf ADCON1   
     BANCO0
