@@ -80,6 +80,7 @@
     bcf la
    
 inicio                          ;ver se tem erro
+    ;tag vq1
   
 ;configuracao pinos
 ler_entrada_analogica
