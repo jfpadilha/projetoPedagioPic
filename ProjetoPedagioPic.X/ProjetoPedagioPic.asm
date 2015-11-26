@@ -1,4 +1,7 @@
-#include "p16f877a.inc"
+    ;balanca = 2
+    ;kit pedagio 1
+    
+    #include "p16f877a.inc"
 
 ; __config 0xFFBA
  __CONFIG _FOSC_HS & _WDTE_OFF & _PWRTE_OFF & _BOREN_OFF & _LVP_ON & _CPD_OFF & _WRT_OFF & _CP_OFF
@@ -29,51 +32,71 @@
     contador
     contador2
  endc
- 
+
  org 0
  
- BANCO1
+    BANCO1
+    
+ ;Inicializacoes
+    movlw 0
+    movwf valor_entrada
+    movwf valor_salvo
+    movwf valor_restante
+    movwf valor_veiculo
+    movwf valor_teste
+    movwf qtd_troco  
  
- movlw 0
- movwf TRISD		; porta D é saída
+ ;DEFINIR SAIDAS
+    movlw 0
+    movwf TRISD             ;saida para funcionar LCD
+    movlw b'11100000'
+    movwf TRISB             ; porta B é saída 
+    movlw b'11100000'       ; PSMODE = 0 para porta D ser I/O
+    movwf TRISE             ; bits 0 e 1 da porta E são saídas 
+    movlw b'11100000'       ; pinos configurados como digitais
+    movwf TRISC             ; bits 0 e 1 da porta E são saídas 
+    movlw b'11100000'       ; pinos configurados como digitais
+    
+;DEFINIR ENTRADAS
+;    movlw b'11101111'       ;definir D como ENTRADA
+;    movlw TRISD
+    movlw b'11101111'
+    movwf TRISA
+    movlw b'11101111'
+    movwf ADCON1
+
+;CONFIGURACAO PRESCALER
+    movlw b'00000111'          ; timer 0 com clock interno e prescaler 256
+    movwf	OPTION_REG
  
- movlw b'11101100'	; PSMODE = 0 para porta D ser I/O
- movwf TRISE		; bits 0 e 1 da porta E são saídas
+ BANCO0 
+    movlw b'00110001'       ; timer 1 com clock interno e prescaler 8
+    movwf T1CON
  
- movlw b'00001110'	; pinos configurados como digitais
- movwf ADCON1
- 
-;------------------ 
- 
- movlw b'00000111'	; timer 0 com clock interno e prescaler 256
- movwf	OPTION_REG
- 
- BANCO0
- 
- movlw b'00110001'	; timer 1 com clock interno e prescaler 8
- movwf T1CON
- 
- call inicia_lcd
- call msg_bem_vindo
- bcf ac
- bcf lm
- bcf sm
- bcf la
- 
+    call inicia_lcd
+    call msg_bem_vindo
+    bcf ac
+    bcf lm
+    bcf sm
+    bcf la
+   
 inicio
   call espera_1s
   call limpa_lcd
   call valor_isento
   call espera_4s
+  call abrir_cancela
+  call espera_4s
+  call fechar_cancela
   call msg_bem_vindo
- 
- 
- goto $
- 
- ler_entrada_analogica
+  
+  goto $
+  
+;configuracao pinos
+ler_entrada_analogica
     BANCO1
     movwf 1
-    movwf TRISD
+    movwf TRISD             ;D como ENTRADA
     movlw b'00000011'       ;pinos configurados para analogico
     movwf ADCON1   
     BANCO0
@@ -102,7 +125,7 @@ identifica_veiculo
 ;    sublw 225
 ;    movwf valor_teste    
 ;    btfsc STATUS, C               ;se for zero, pula
-;;    goto
+;    goto
     
 seta_valor10
     
@@ -120,198 +143,192 @@ ler_n5                  ;sim
     goto ler_valor_entrada
  
 valor_isento
- call inicia_lcd
- movlw 'M'
- call escreve_dado_lcd
- movlw 'O'
- call escreve_dado_lcd
- movlw 'T'
- call escreve_dado_lcd
- movlw 'O'
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'I'
- call escreve_dado_lcd
- movlw 'S'
- call escreve_dado_lcd
- movlw 'E'
- call escreve_dado_lcd
- movlw 'N'
- call escreve_dado_lcd
- movlw 'T'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- return
+    call inicia_lcd
+    movlw 'M'
+    call escreve_dado_lcd
+    movlw 'O'
+    call escreve_dado_lcd
+    movlw 'T'
+    call escreve_dado_lcd
+    movlw 'O'
+    call escreve_dado_lcd
+    movlw ' '
+    call escreve_dado_lcd
+    movlw 'I'
+    call escreve_dado_lcd
+    movlw 'S'
+    call escreve_dado_lcd
+    movlw 'E'
+    call escreve_dado_lcd
+    movlw 'N'
+    call escreve_dado_lcd
+    movlw 'T'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    return
 
 valor_5
- call inicia_lcd
- movlw 'V'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- movlw 'L'
- call escreve_dado_lcd
- movlw 'O'
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw '$'
- call escreve_dado_lcd
- movlw '5'
- call escreve_dado_lcd
- return 
+    call inicia_lcd
+    movlw 'V'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    movlw 'L'
+    call escreve_dado_lcd
+    movlw 'O'
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw ' '
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw '$'
+    call escreve_dado_lcd
+    movlw '5'
+    call escreve_dado_lcd
+    return 
 
 valor_7
- call inicia_lcd
- movlw 'V'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- movlw 'L'
- call escreve_dado_lcd
- movlw 'O'
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw '$'
- call escreve_dado_lcd
- movlw '7'
- call escreve_dado_lcd
- return
+    call inicia_lcd
+    movlw 'V'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    movlw 'L'
+    call escreve_dado_lcd
+    movlw 'O'
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw ' '
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw '$'
+    call escreve_dado_lcd
+    movlw '7'
+    call escreve_dado_lcd
+    return
 
 valor_10
- call inicia_lcd
- movlw 'V'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- movlw 'L'
- call escreve_dado_lcd
- movlw 'O'
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw '$'
- call escreve_dado_lcd
- movlw '1'
- call escreve_dado_lcd
- movlw '0'
- call escreve_dado_lcd
- return
+    call inicia_lcd
+    movlw 'V'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    movlw 'L'
+    call escreve_dado_lcd
+    movlw 'O'
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw ' '
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw '$'
+    call escreve_dado_lcd
+    movlw '1'
+    call escreve_dado_lcd
+    movlw '0'
+    call escreve_dado_lcd
+    return
 
 msg_bem_vindo
- call inicia_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'B'
- call escreve_dado_lcd
- movlw 'E'
- call escreve_dado_lcd
- movlw 'M'
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'V'
- call escreve_dado_lcd
- movlw 'I'
- call escreve_dado_lcd
- movlw 'N'
- call escreve_dado_lcd
- movlw 'D'
- call escreve_dado_lcd
- movlw 'O'
- call escreve_dado_lcd
- return
+    call inicia_lcd
+    movlw 'B'
+    call escreve_dado_lcd
+    movlw 'E'
+    call escreve_dado_lcd
+    movlw 'M'
+    call escreve_dado_lcd
+    movlw ' '
+    call escreve_dado_lcd
+    movlw 'V'
+    call escreve_dado_lcd
+    movlw 'I'
+    call escreve_dado_lcd
+    movlw 'N'
+    call escreve_dado_lcd
+    movlw 'D'
+    call escreve_dado_lcd
+    movlw 'O'
+    call escreve_dado_lcd
+    return
 
 valor_falta
- call inicia_lcd
- movlw 'F'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- movlw 'L'
- call escreve_dado_lcd
- movlw 'T'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw '$'
- call escreve_dado_lcd
- return
+    call inicia_lcd
+    movlw 'F'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    movlw 'L'
+    call escreve_dado_lcd
+    movlw 'T'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    movlw ' '
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw '$'
+    call escreve_dado_lcd
+    return
 
 msg_troco
- call inicia_lcd
- movlw 'T'
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw 'O'
- call escreve_dado_lcd
- movlw 'C'
- call escreve_dado_lcd
- movlw 'O'
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw '$'
- call escreve_dado_lcd
- return
+    call inicia_lcd
+    movlw 'T'
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw 'O'
+    call escreve_dado_lcd
+    movlw 'C'
+    call escreve_dado_lcd
+    movlw 'O'
+    call escreve_dado_lcd
+    movlw ' '
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw '$'
+    call escreve_dado_lcd
+    return
 
 msg_cancela_aberta
- call inicia_lcd
- movlw 'C'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- movlw 'N'
- call escreve_dado_lcd
- movlw 'C'
- call escreve_dado_lcd
- movlw 'E'
- call escreve_dado_lcd
- movlw 'L'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- movlw ' '
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- movlw 'B'
- call escreve_dado_lcd
- movlw 'E'
- call escreve_dado_lcd
- movlw 'R'
- call escreve_dado_lcd
- movlw 'T'
- call escreve_dado_lcd
- movlw 'A'
- call escreve_dado_lcd
- return
+    call inicia_lcd
+    movlw 'C'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    movlw 'N'
+    call escreve_dado_lcd
+    movlw 'C'
+    call escreve_dado_lcd
+    movlw 'E'
+    call escreve_dado_lcd
+    movlw 'L'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    movlw ' '
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    movlw 'B'
+    call escreve_dado_lcd
+    movlw 'E'
+    call escreve_dado_lcd
+    movlw 'R'
+    call escreve_dado_lcd
+    movlw 'T'
+    call escreve_dado_lcd
+    movlw 'A'
+    call escreve_dado_lcd
+    return
  
  ;------ 1 segundo------
 espera_1s
@@ -367,77 +384,84 @@ aguarda_estouro_4s
  ;------------| PROCESSAMENTO DE TROCO |------------
 
 devolve_moedas
- bsf sm
- call espera_1s
- bcf sm
- call espera_1s
- bsf lm
- call espera_1s
- bcf lm
- decfsz valor_restante
- call limpa_lcd
- call msg_cancela_aberta
- goto abrir_cancela
+    bsf sm
+    call espera_1s
+    bcf sm
+    call espera_1s
+    bsf lm
+    call espera_1s
+    bcf lm
+    decfsz valor_restante
+    call limpa_lcd
+    call msg_cancela_aberta
+    goto abrir_cancela
  
  ;------------| ABRIR/FECHAR CANCELA |------------
 abrir_cancela
- bsf ac
+    bsf ac
+    call limpa_lcd
+    call inicia_lcd
+    call msg_cancela_aberta
+    call espera_1s
+    call espera_1s
+    call espera_1s
 	
 fechar_cancela
- bcf ac
- call inicia_lcd
- call msg_bem_vindo
- goto inicio
+    bcf ac
+    call limpa_lcd
+    call inicia_lcd
+    call msg_bem_vindo
+    goto inicio
  
 inicia_lcd
- movlw 38h
- call escreve_comando_lcd
- movlw 38h
- call escreve_comando_lcd
- movlw 38h
- call escreve_comando_lcd
- movlw 0Ch
- call escreve_comando_lcd
- movlw 06h
- call escreve_comando_lcd
+    movlw 38h
+    call escreve_comando_lcd
+    movlw 38h
+    call escreve_comando_lcd
+    movlw 38h
+    call escreve_comando_lcd
+    movlw 0Ch
+    call escreve_comando_lcd
+    movlw 06h
+    call escreve_comando_lcd
  
 limpa_lcd
- movlw 01h
- call escreve_comando_lcd
- call atraso_limpa_lcd
- return
+    movlw 01h
+    call escreve_comando_lcd
+    call atraso_limpa_lcd
+    return
  
 escreve_comando_lcd
- bcf PORTE, RE0		; Define dado no LCD(RS=1)
- movwf PORTD
- bsf PORTE, RE1		; ativar ENABLE do LCD
- bcf PORTE, RE1		; Desativar ENABLE do LCD
- call atraso_lcd
- return
+    bcf PORTE, RE0		; Define dado no LCD(RS=1)
+    movwf PORTD
+    bsf PORTE, RE1		; ativar ENABLE do LCD
+    bcf PORTE, RE1		; Desativar ENABLE do LCD
+    call atraso_lcd
+    return
  
 escreve_dado_lcd
- bsf PORTE, RE0		; Define dado no LCD(RS=1)
- movwf PORTD
- bsf PORTE, RE1		; ativar ENABLE do LCD
- bcf PORTE, RE1		; Desativar ENABLE do LCD
- call atraso_lcd
- return
+    bsf PORTE, RE0		; Define dado no LCD(RS=1)
+    movwf PORTD
+    bsf PORTE, RE1		; ativar ENABLE do LCD
+    bcf PORTE, RE1		; Desativar ENABLE do LCD
+    call atraso_lcd
+    return
  
 atraso_lcd		; Atraso de 40us para LCD
- movlw 26		;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
- movwf contador		; 4 clocks
+    movlw 26		;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
+    movwf contador		; 4 clocks
 ret_atraso_lcd
- decfsz contador	; 8 clocks (qndo da saltos é 8 clocks), este e o goto vai ser repetido N vezes
- goto ret_atraso_lcd	; 4 clocks
- return
+    decfsz contador	; 8 clocks (qndo da saltos é 8 clocks), este e o goto vai ser repetido N vezes
+    goto ret_atraso_lcd	; 4 clocks
+    return
  
 atraso_limpa_lcd
- movlw 40		;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
- movwf contador2	; 4 clocks
+    movlw 40		;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
+    movwf contador2	; 4 clocks
 ret_atraso_limpa_lcd
- call atraso_lcd
- decfsz contador2	
- goto ret_atraso_limpa_lcd	
- return
+    call atraso_lcd
+    decfsz contador2	
+    goto ret_atraso_limpa_lcd	
+    return
  
  end
