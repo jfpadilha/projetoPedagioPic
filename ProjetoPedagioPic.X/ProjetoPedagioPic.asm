@@ -79,7 +79,7 @@
     bcf sm
     bcf la
    
-inicio                    ;ver se tem erro
+inicio                          ;ver se tem erro
   
 ;configuracao pinos
 ler_entrada_analogica
