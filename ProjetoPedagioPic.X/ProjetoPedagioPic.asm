@@ -1,4 +1,4 @@
-    ;balanca = 2
+ ;balanca = 2
     ;kit pedagio 1
     
     #include "p16f877a.inc"
@@ -31,45 +31,64 @@
     valor_teste
     contador
     contador2
+    valor_vazio
+    valor_moto
+    valor_carro
+    valor_truck
+    valor_caminhao
  endc
 
- org 0
- 
+ org 0 
         
  ;Inicializacoes
+ BANCO0
     movlw 0
     movwf valor_entrada
     movwf valor_salvo
     movwf valor_restante
     movwf valor_veiculo
     movwf valor_teste
-    movwf qtd_troco  
+    movwf qtd_troco
+    
+    movlw 184
+    movwf valor_vazio
+    movlw 194
+    movwf valor_moto
+    movlw 198
+    movwf valor_carro
+    movlw 202
+    movwf valor_truck
+    movlw 215
+    movwf valor_caminhao
  
  ;DEFINIR SAIDAS
-    BANCO1
-    movlw b'11100000'
+  BANCO1
+    movlw b'11111110'
     movwf TRISB             ; porta B é saída 
     movlw b'11100000'       ; PSMODE = 0 para porta D ser I/O
     movwf TRISE             ; bits 0 e 1 da porta E são saídas 
     movlw b'00000000'       ; pinos configurados como digitais
     movwf TRISC             ; bits 0 e 1 da porta E são saídas 
+    movlw b'00000000'       ; pinos configurados como digitais
+    movwf TRISD             ; bits 0 e 1 da porta E são saídas 
     
 ;DEFINIR ENTRADAS
     movlw b'11111111'
     movwf TRISA
-    movlw b'00000100'
+    movlw b'00000010'
     movwf ADCON1
 
 ;CONFIGURACAO PRESCALER
     movlw b'00000111'          ; timer 0 com clock interno e prescaler 256
-    movwf	OPTION_REG
+    movwf OPTION_REG
  
- BANCO0 
+  BANCO0 
     movlw b'00110001'       ; timer 1 com clock interno e prescaler 8
     movwf T1CON
  
     call inicia_lcd
     call msg_bem_vindo
+    call espera_4s
     bcf ac
     bcf lm
     bcf sm
@@ -77,49 +96,68 @@
    
 inicio
     BANCO1
-    movwf b'00000011'
-    movwf TRISD             ;D como ENTRADA
-    movlw b'00000011'       ;pinos configurados para analogico
+;    movwf b'00000011'
+;    movwf TRISD             ;D como ENTRADA
+    movlw b'00000010'       ;pinos configurados para analogico
     movwf ADCON1   
     BANCO0
-    bsf ADCON0, 2           ;set bit 2 do adcon0 (GO/DONE)
+    movlw b'01010001'
+    movwf ADCON0
+    
+    
+    call atraso_limpa_lcd
+    
+    bsf ADCON0, GO_DONE           ;set bit 2 do adcon0 (GO/DONE)
     
 testa_ad
-    btfsc ADCON0, 2         ;testa se eh zero, se for pula    
-    goto testa_ad           ;se  != zero aqui
+    btfsc ADCON0, GO_DONE    ;testa se eh zero, se for pula    
+    goto testa_ad            ;se  != zero aqui
+        
+    BANCO1
+    movwf b'00000000'
+    movwf TRISD             ;D como SAIDA
+    BANCO0
     
     movfw ADRESH            ;zero executa aqui
     movwf peso_veiculo      ;0v = 0 5v = 255    
+    movwf PORTD
+    goto $
+    ;movfw valor_vazio
+  ;  movwf peso_veiculo
     
-    movlw peso_veiculo
-    sublw 195
+   ; movfw peso_veiculo
+    ;subwf peso_veiculo
         
-    btfsc STATUS, C               ;se for zero, pula
+    btfss STATUS, C               ;se for zero, pula    
+    goto seta_valor10 ; goto identifica_veiculo       ;se nao for zero
     goto inicio                ;volta se for zero
-    goto identifica_veiculo       ;se nao for zero
                     
-identifica_veiculo
+identifica_veiculo 
     BANCO1
     movwf b'00000000'
     movwf TRISD             ;D como SAIDA
     
+    call limpa_lcd    
+    call valor_isento
+    goto $
+    
     BANCO0
     movlw peso_veiculo
-    sublw 225
+    subwf valor_caminhao
     btfsc STATUS, C
     goto seta_valor10             ;se for zero
     goto identifica_truck         ;se nao for zero        
     
 identifica_truck
     movlw peso_veiculo
-    sublw 221
+    subwf valor_truck
     btfsc STATUS, C
     goto seta_valor7              ;se for zero
     goto identifica_carro         ;se nao for zero
        
 identifica_carro
     movlw peso_veiculo
-    sublw 209
+    subwf valor_carro
     btfsc STATUS, C    
     goto seta_valor5              ;se for zero
     goto identifica_moto          ;se nao for zero
@@ -129,7 +167,6 @@ identifica_moto
 
 seta_valor10
     call limpa_lcd
-    call inicia_lcd
     call valor_10
     movlw 10
     movwf valor_veiculo
@@ -137,7 +174,6 @@ seta_valor10
     
 seta_valor7
     call limpa_lcd
-    call inicia_lcd
     call valor_7
     movlw 7
     movwf valor_veiculo
@@ -145,7 +181,6 @@ seta_valor7
     
 seta_valor5
     call limpa_lcd
-    call inicia_lcd
     call valor_5
     movlw 5
     movwf valor_veiculo
@@ -185,7 +220,6 @@ verifica_valor_entrada
     goto abrir_cancela			    ; =0 ele vai para abrir cancela 
    
 valor_isento
-    call inicia_lcd
     movlw 'M'
     call escreve_dado_lcd
     movlw 'O'
@@ -211,7 +245,6 @@ valor_isento
     return
 
 valor_5
-    call inicia_lcd
     movlw 'V'
     call escreve_dado_lcd
     movlw 'A'
@@ -233,7 +266,6 @@ valor_5
     return 
 
 valor_7
-    call inicia_lcd
     movlw 'V'
     call escreve_dado_lcd
     movlw 'A'
@@ -255,7 +287,6 @@ valor_7
     return
 
 valor_10
-    call inicia_lcd
     movlw 'V'
     call escreve_dado_lcd
     movlw 'A'
@@ -279,7 +310,6 @@ valor_10
     return
 
 msg_bem_vindo
-    call inicia_lcd
     movlw ' '
     call escreve_dado_lcd
     movlw ' '
@@ -307,7 +337,6 @@ msg_bem_vindo
     return
 
 valor_falta
-    call inicia_lcd
     movlw 'F'
     call escreve_dado_lcd
     movlw 'A'
@@ -327,7 +356,6 @@ valor_falta
     return
 
 msg_troco
-    call inicia_lcd
     movlw 'T'
     call escreve_dado_lcd
     movlw 'R'
@@ -347,7 +375,6 @@ msg_troco
     return
 
 msg_cancela_aberta
-    call inicia_lcd
     movlw 'C'
     call escreve_dado_lcd
     movlw 'A'
@@ -442,7 +469,6 @@ devolve_moedas
     decfsz valor_restante
     goto devolve_moedas
     call limpa_lcd
-    call inicia_lcd
     call msg_cancela_aberta
     goto abrir_cancela
  
@@ -450,20 +476,18 @@ devolve_moedas
 abrir_cancela
     bsf ac
     call limpa_lcd
-    call inicia_lcd
     call msg_cancela_aberta
     call espera_4s
 	
 fechar_cancela
     bcf ac
     call limpa_lcd
-    call inicia_lcd
     call msg_bem_vindo
     goto inicio
  
 inicia_lcd
-    movlw 38h
-    call escreve_comando_lcd
+;    movlw 38h
+;    call escreve_comando_lcd
     movlw 38h
     call escreve_comando_lcd
     movlw 38h
@@ -497,7 +521,7 @@ escreve_dado_lcd
  
 atraso_lcd		; Atraso de 40us para LCD
     movlw 26		;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
-    movwf contador		; 4 clocks
+    movwf contador	; 4 clocks
 ret_atraso_lcd
     decfsz contador	; 8 clocks (qndo da saltos é 8 clocks), este e o goto vai ser repetido N vezes
     goto ret_atraso_lcd	; 4 clocks
