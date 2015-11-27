@@ -103,8 +103,7 @@ inicio
     BANCO0
     movlw b'01010001'
     movwf ADCON0
-    
-    
+        
     call atraso_limpa_lcd
     
     bsf ADCON0, GO_DONE           ;set bit 2 do adcon0 (GO/DONE)
@@ -120,13 +119,13 @@ testa_ad
     
     movfw ADRESH            ;zero executa aqui
     movwf peso_veiculo      ;0v = 0 5v = 255    
-    movwf PORTD
-    goto $
-    ;movfw valor_vazio
-  ;  movwf peso_veiculo
+;    movwf PORTD            ; teste RONALDO
+;    goto $                 ;TESTE RONALDO
+    movfw valor_vazio
+    movwf peso_veiculo
     
-   ; movfw peso_veiculo
-    ;subwf peso_veiculo
+    movfw peso_veiculo
+    subwf peso_veiculo
         
     btfss STATUS, C               ;se for zero, pula    
     goto seta_valor10 ; goto identifica_veiculo       ;se nao for zero
