@@ -47,8 +47,6 @@
  
  ;DEFINIR SAIDAS
     BANCO1
-;    movlw 0
-;    movwf TRISD             ;saida para funcionar LCD
     movlw b'11100000'
     movwf TRISB             ; porta B é saída 
     movlw b'11100000'       ; PSMODE = 0 para porta D ser I/O
@@ -95,8 +93,7 @@ testa_ad
     
     movlw peso_veiculo
     sublw 195
-    ;movwf valor_teste
-    
+        
     btfsc STATUS, C               ;se for zero, pula
     goto inicio                ;volta se for zero
     goto identifica_veiculo       ;se nao for zero
