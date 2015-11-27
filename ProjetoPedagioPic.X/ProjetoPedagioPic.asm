@@ -50,15 +50,15 @@
     movwf valor_teste
     movwf qtd_troco
     
-    movlw 184
+    movlw 192
     movwf valor_vazio
-    movlw 194
+    movlw 205
     movwf valor_moto
-    movlw 198
+    movlw 217
     movwf valor_carro
-    movlw 202
+    movlw 225
     movwf valor_truck
-    movlw 215
+    movlw 235
     movwf valor_caminhao
  
  ;DEFINIR SAIDAS
@@ -117,18 +117,20 @@ testa_ad
     movwf TRISD             ;D como SAIDA
     BANCO0
     
-    movfw ADRESH            ;zero executa aqui
+;    movfw ADRESH
+    movlw 240
     movwf peso_veiculo      ;0v = 0 5v = 255    
-;    movwf PORTD            ; teste RONALDO
+;    movwf PORTD            ;teste RONALDO
 ;    goto $                 ;TESTE RONALDO
     movfw valor_vazio
-    movwf peso_veiculo
+;    movwf peso_veiculo
     
-    movfw peso_veiculo
+;    movfw peso_veiculo
     subwf peso_veiculo
+    goto abrir_cancela
         
     btfss STATUS, C               ;se for zero, pula    
-    goto seta_valor10 ; goto identifica_veiculo       ;se nao for zero
+    goto identifica_veiculo       ;se nao for zero
     goto inicio                ;volta se for zero
                     
 identifica_veiculo 
@@ -136,8 +138,7 @@ identifica_veiculo
     movwf b'00000000'
     movwf TRISD             ;D como SAIDA
     
-    call limpa_lcd    
-    call valor_isento
+    call abrir_cancela
     goto $
     
     BANCO0
