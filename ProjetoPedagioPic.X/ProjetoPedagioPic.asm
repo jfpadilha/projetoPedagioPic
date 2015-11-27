@@ -20,6 +20,7 @@
     #define sm      PORTC, RC3
     #define lm      PORTC, RC4
     #define la      PORTB, RB0
+    #define LED1    PORTB, 0
 
  CBLOCK 20h                         ; cria registradores apartir da 20
     valor_entrada
@@ -93,7 +94,7 @@
     bcf lm
     bcf sm
     bcf la
-   
+    clrf PORTB
 inicio
     BANCO1
 ;    movwf b'00000011'
@@ -185,7 +186,7 @@ ler_valor_entrada
     goto valor_entrada_2
     goto ler_n5
     
-ler_n5                  
+ler_n5      
     btfsc n5
     goto valor_entrada_5
     goto ler_valor_entrada    
@@ -204,14 +205,20 @@ valor_entrada_5
  
 verifica_valor_entrada
     movlw valor_entrada
-    addlw valor_salvo
-    sublw valor_veiculo
+    addwf valor_salvo
+    subwf valor_veiculo
     movwf valor_restante
     movlw 0
     movwf valor_entrada
-    ;btfsc STATUS, valor_restante
-    ;goto ....				    ; =1 
-    goto abrir_cancela			    ; =0 ele vai para abrir cancela 
+    movwf valor_restante
+    btfsc STATUS, C
+    goto devolve_moedas
+    goto verifa_faltou_ou_abrir_cancela		    ; =0 ele vai para abrir cancela 
+   
+verifa_faltou_ou_abrir_cancela
+    btfss STATUS, C
+    goto ler_valor_entrada
+    goto abrir_cancela
    
 valor_isento
     movlw 'M'
@@ -450,7 +457,7 @@ aguarda_estouro_4s
  goto aguarda_estouro_4s
  return
  
- ;------------| PROCESSAMENTO DE TROCO |------------
+;------------| PROCESSAMENTO DE TROCO |------------
 
 devolve_moedas
     bsf sm
@@ -460,7 +467,7 @@ devolve_moedas
     bsf lm
     call espera_1s
     bcf lm
-    decfsz valor_restante
+    incfsz valor_restante
     goto devolve_moedas
     call limpa_lcd
     call msg_cancela_aberta
@@ -478,6 +485,14 @@ fechar_cancela
     call limpa_lcd
     call msg_bem_vindo
     goto inicio
+    
+;-------------| Pisca LED |--------------------
+pisca_led
+    bsf LED1
+    call espera_2s
+    bcf LED1
+    call espera_2s
+    return
  
 inicia_lcd
 ;    movlw 38h
