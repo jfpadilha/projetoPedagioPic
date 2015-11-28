@@ -38,6 +38,7 @@
     valor_truck
     valor_caminhao
     peso_salvo
+    peso
  endc
 
  org 0 
@@ -103,67 +104,50 @@ inicio
     
     bsf ADCON0, GO_DONE           ;set bit 2 do adcon0 (GO/DONE)
     
-testa_ad    
-    btfsc ADCON0, GO_DONE    ;testa se eh zero, se for pula    
-    goto testa_ad            ;se  == zero aqui
-        
-    movfw ADRESH     ;movlw b'11111111' 
-    movwf peso_veiculo      ;0v = 0 5v = 255    
-    movwf peso_salvo
-    movfw valor_vazio 
-    subwf peso_veiculo
-    call recupera_peso
-        
-    btfsc STATUS, C               ;se for zero, pula    
-    goto identifica_veiculo       ;se nao for zero
-    goto inicio                   ;volta se for zero
-                    
-identifica_veiculo 
-    BANCO1
-    movlw b'00000000'
-    movwf TRISD
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LOOP INICIAL;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+SENSORES_DESATIVADOS ;3,7v ~ 3,8v = 3,7 = 189
     BANCO0
 
-    
-    bcf STATUS, C
+    bsf ADCON0, GO_DONE
+VOLTA_SENSORES_DESATIVADOS
+    btfsc ADCON0, GO_DONE
+    goto VOLTA_SENSORES_DESATIVADOS
 
-identifica_moto
-    movlw peso_veiculo
-    sublw .186
-    call recupera_peso
-    btfsc STATUS, C    
-    goto identifica_carro
-    goto abrir_cancela            ;se for zero
 
-identifica_carro
-    movlw peso_veiculo
-    sublw .193
-    call recupera_peso
-    btfsc STATUS, C    
-    goto seta_valor5              ;se for zero
-    goto identifica_truck          ;se nao for zero
+    movfw ADRESH
+    movwf peso
 
-identifica_truck
+       
+VERIFICA_VEICULOS
+ ;volta pro sensor desativado se nao tiver peso
+    movlw .180
+    subwf peso, W
+    call espera_1s
+    btfss STATUS, C
+    goto SENSORES_DESATIVADOS
+
+ ;compara moto
+    movlw .184
+    subwf peso, W
+    btfss STATUS, C
+    goto abrir_cancela
+ ;compara carro
+    movlw .191
+    subwf peso, W
+    btfss STATUS, C
+    goto seta_valor5
+ ;compara carro3eixos
     movlw .195
-    subwf peso_veiculo
-    call recupera_peso
-    btfsc STATUS, C
-    goto seta_valor7              ;se for zero
-    goto identifica_caminhao         ;se nao for zero
-    
-identifica_caminhao    
+    subwf peso, W
+    btfss STATUS, C
+    goto seta_valor7
+ ;compara carro4eixos
     movlw .203
-    subwf peso_veiculo
-    call recupera_peso
-    btfsc STATUS, C
+    subwf peso, W
+    btfss STATUS, C
     goto seta_valor10
-    movf recupera_peso, peso_veiculo
-    goto identifica_truck
-    
-recupera_peso
-    movfw peso_salvo
-    movwf peso_veiculo
-    return
+    goto SENSORES_DESATIVADOS
+
 
     
 seta_valor10
