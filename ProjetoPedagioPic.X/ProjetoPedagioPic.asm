@@ -37,6 +37,7 @@
     valor_carro
     valor_truck
     valor_caminhao
+    peso_salvo
  endc
 
  org 0 
@@ -55,11 +56,11 @@
     movwf valor_vazio
     movlw .191
     movwf valor_moto
-    movlw .200
+    movlw .197
     movwf valor_carro
-    movlw .210
+    movlw .195
     movwf valor_truck
-    movlw .220
+    movlw .203
     movwf valor_caminhao
  
  ;DEFINIR SAIDAS
@@ -108,8 +109,10 @@ testa_ad
         
     movfw ADRESH     ;movlw b'11111111' 
     movwf peso_veiculo      ;0v = 0 5v = 255    
+    movwf peso_salvo
     movfw valor_vazio 
-    subwf peso_veiculo   
+    subwf peso_veiculo
+    call recupera_peso
         
     btfsc STATUS, C               ;se for zero, pula    
     goto identifica_veiculo       ;se nao for zero
@@ -120,31 +123,49 @@ identifica_veiculo
     movlw b'00000000'
     movwf TRISD
     BANCO0
-;    call limpa_lcd
-;    goto $
-    movlw peso_veiculo
-    subwf valor_caminhao
-    btfsc STATUS, C
-    goto seta_valor10             ;se nao for zero
-    goto identifica_truck         ;se for zero
+
     
-identifica_truck
-    movlw peso_veiculo
-    subwf valor_truck
-    btfsc STATUS, C
-    goto seta_valor7              ;se for zero
-    goto identifica_carro         ;se nao for zero
-       
-identifica_carro
-    movlw peso_veiculo
-    subwf valor_carro
-    btfsc STATUS, C    
-    goto seta_valor5              ;se for zero
-    goto identifica_moto          ;se nao for zero
-    
+    bcf STATUS, C
+
 identifica_moto
+    movlw peso_veiculo
+    sublw .186
+    call recupera_peso
+    btfsc STATUS, C    
+    goto identifica_carro
     goto abrir_cancela            ;se for zero
 
+identifica_carro
+    movlw peso_veiculo
+    sublw .193
+    call recupera_peso
+    btfsc STATUS, C    
+    goto seta_valor5              ;se for zero
+    goto identifica_truck          ;se nao for zero
+
+identifica_truck
+    movlw .195
+    subwf peso_veiculo
+    call recupera_peso
+    btfsc STATUS, C
+    goto seta_valor7              ;se for zero
+    goto identifica_caminhao         ;se nao for zero
+    
+identifica_caminhao    
+    movlw .203
+    subwf peso_veiculo
+    call recupera_peso
+    btfsc STATUS, C
+    goto seta_valor10
+    movf recupera_peso, peso_veiculo
+    goto identifica_truck
+    
+recupera_peso
+    movfw peso_salvo
+    movwf peso_veiculo
+    return
+
+    
 seta_valor10
     call limpa_lcd
     call valor_10
