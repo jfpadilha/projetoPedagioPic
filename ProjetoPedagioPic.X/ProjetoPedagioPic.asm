@@ -51,15 +51,15 @@
     movwf valor_teste
     movwf qtd_troco
     
-    movlw 192
+    movlw .184
     movwf valor_vazio
-    movlw 205
+    movlw .191
     movwf valor_moto
-    movlw 217
+    movlw .200
     movwf valor_carro
-    movlw 225
+    movlw .210
     movwf valor_truck
-    movlw 235
+    movlw .220
     movwf valor_caminhao
  
  ;DEFINIR SAIDAS
@@ -89,59 +89,44 @@
  
     call inicia_lcd
     call msg_bem_vindo
-    call espera_4s
+;    call espera_4s
     bcf ac
     bcf lm
     bcf sm
     bcf la
-    clrf PORTB
+    
 inicio
-    BANCO1
-;    movwf b'00000011'
-;    movwf TRISD             ;D como ENTRADA
-    movlw b'00000010'       ;pinos configurados para analogico
-    movwf ADCON1   
-    BANCO0
     movlw b'01010001'
     movwf ADCON0
-        
     call atraso_limpa_lcd
     
     bsf ADCON0, GO_DONE           ;set bit 2 do adcon0 (GO/DONE)
     
-testa_ad
+testa_ad    
     btfsc ADCON0, GO_DONE    ;testa se eh zero, se for pula    
-    goto testa_ad            ;se  != zero aqui
+    goto testa_ad            ;se  == zero aqui
         
-    BANCO1
-    movwf b'00000000'
-    movwf TRISD             ;D como SAIDA
-    BANCO0
-    
-    movlw 240 ;movfw ADRESH    
+    movfw ADRESH     ;movlw b'11111111' 
     movwf peso_veiculo      ;0v = 0 5v = 255    
-;    movwf PORTD            ;teste RONALDO
-;    goto $                 ;TESTE RONALDO
-    movfw peso_veiculo
-    subwf valor_vazio    
+    movfw valor_vazio 
+    subwf peso_veiculo   
         
     btfsc STATUS, C               ;se for zero, pula    
-    goto seta_valor10 ;goto identifica_veiculo       ;se nao for zero
+    goto identifica_veiculo       ;se nao for zero
     goto inicio                   ;volta se for zero
                     
 identifica_veiculo 
     BANCO1
     movlw b'00000000'
     movwf TRISD
-   
-    goto seta_valor10
-        
     BANCO0
+;    call limpa_lcd
+;    goto $
     movlw peso_veiculo
     subwf valor_caminhao
     btfsc STATUS, C
-    goto seta_valor10             ;se for zero
-    goto identifica_truck         ;se nao for zero        
+    goto seta_valor10             ;se nao for zero
+    goto identifica_truck         ;se for zero
     
 identifica_truck
     movlw peso_veiculo
