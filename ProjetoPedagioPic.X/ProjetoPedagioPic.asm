@@ -1,6 +1,3 @@
- ;balanca = 2
-    ;kit pedagio 1
-    
     #include "p16f877a.inc"
 
 ; __config 0xFFBA
@@ -22,7 +19,7 @@
     #define la      PORTB, RB0
     #define LED1    PORTB, 0
 
- CBLOCK 20h                         ; cria registradores apartir da 20
+ CBLOCK 20h
     valor_entrada
     valor_salvo
     valor_restante
@@ -67,13 +64,13 @@
  ;DEFINIR SAIDAS
   BANCO1
     movlw b'11111110'
-    movwf TRISB             ; porta B é saída 
-    movlw b'11100000'       ; PSMODE = 0 para porta D ser I/O
-    movwf TRISE             ; bits 0 e 1 da porta E são saídas 
-    movlw b'00000000'       ; pinos configurados como digitais
-    movwf TRISC             ; bits 0 e 1 da porta E são saídas 
-    movlw b'00000000'       ; pinos configurados como digitais
-    movwf TRISD             ; bits 0 e 1 da porta E são saídas 
+    movwf TRISB
+    movlw b'11100000'
+    movwf TRISE
+    movlw b'00000000'
+    movwf TRISC
+    movlw b'00000000'
+    movwf TRISD
     
 ;DEFINIR ENTRADAS
     movlw b'11111111'
@@ -82,11 +79,11 @@
     movwf ADCON1
 
 ;CONFIGURACAO PRESCALER
-    movlw b'00000111'          ; timer 0 com clock interno e prescaler 256
+    movlw b'00000111'
     movwf OPTION_REG
  
   BANCO0 
-    movlw b'00110001'       ; timer 1 com clock interno e prescaler 8
+    movlw b'00110001'
     movwf T1CON
  
     call inicia_lcd
@@ -102,8 +99,8 @@ inicio
     movwf ADCON0
     call atraso_limpa_lcd
     
-    bsf ADCON0, GO_DONE           ;set bit 2 do adcon0 (GO/DONE)
-    
+    bsf ADCON0, GO_DONE
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LOOP INICIAL;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 SENSORES_DESATIVADOS ;3,7v ~ 3,8v = 3,7 = 189
     BANCO0
@@ -113,13 +110,10 @@ VOLTA_SENSORES_DESATIVADOS
     btfsc ADCON0, GO_DONE
     goto VOLTA_SENSORES_DESATIVADOS
 
-
     movfw ADRESH
     movwf peso
-
        
 VERIFICA_VEICULOS
- ;volta pro sensor desativado se nao tiver peso
     movlw .180
     subwf peso, W
     call espera_1s
@@ -438,12 +432,12 @@ espera_4s
  movwf TMR0		; 256  -  196  = 60
 
 aguarda_estouro_4s 
- btfss INTCON, TMR0IF	; espera timer0 estourar
+ btfss INTCON, TMR0IF
  goto aguarda_estouro_4s
  movlw 60		; reprograma para 196 contagens (50ms)
  movwf TMR0		; 256  -  196  = 60
- bcf INTCON, TMR0IF	; limpa flag de estouro
- decfsz contador	; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
+ bcf INTCON, TMR0IF
+ decfsz contador
  goto aguarda_estouro_4s
  return
  
@@ -503,32 +497,32 @@ limpa_lcd
     return
  
 escreve_comando_lcd
-    bcf PORTE, RE0		; Define dado no LCD(RS=1)
+    bcf PORTE, RE0
     movwf PORTD
-    bsf PORTE, RE1		; ativar ENABLE do LCD
-    bcf PORTE, RE1		; Desativar ENABLE do LCD
+    bsf PORTE, RE1
+    bcf PORTE, RE1
     call atraso_lcd
     return
  
 escreve_dado_lcd
-    bsf PORTE, RE0		; Define dado no LCD(RS=1)
+    bsf PORTE, RE0
     movwf PORTD
-    bsf PORTE, RE1		; ativar ENABLE do LCD
-    bcf PORTE, RE1		; Desativar ENABLE do LCD
+    bsf PORTE, RE1
+    bcf PORTE, RE1
     call atraso_lcd
     return
  
-atraso_lcd		; Atraso de 40us para LCD
-    movlw 26		;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
-    movwf contador	; 4 clocks
+atraso_lcd
+    movlw 26
+    movwf contador
 ret_atraso_lcd
-    decfsz contador	; 8 clocks (qndo da saltos é 8 clocks), este e o goto vai ser repetido N vezes
-    goto ret_atraso_lcd	; 4 clocks
+    decfsz contador
+    goto ret_atraso_lcd
     return
  
 atraso_limpa_lcd
-    movlw 40		;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
-    movwf contador2	; 4 clocks
+    movlw 40
+    movwf contador2
 ret_atraso_limpa_lcd
     call atraso_lcd
     decfsz contador2	
