@@ -4,8 +4,8 @@
  __CONFIG _FOSC_HS & _WDTE_OFF & _PWRTE_OFF & _BOREN_OFF & _LVP_ON & _CPD_OFF & _WRT_OFF & _CP_OFF
 
  ;Bancos
-    #define BANCO1	bsf STATUS, RP0
-    #define BANCO0	bcf STATUS, RP0
+    #define BANCO1  bsf STATUS, RP0
+    #define BANCO0  bcf STATUS, RP0
 
 ;Entradas
     #define sp      PORTA, RA2
@@ -19,7 +19,7 @@
     #define la      PORTB, RB0
     #define LED1    PORTB, 0
 
- CBLOCK 20h
+ CBLOCK 20h                         ; cria registradores apartir da 20
     valor_entrada
     valor_salvo
     valor_restante
@@ -29,14 +29,14 @@
     valor_teste
     contador
     contador2
-    valor_vazio
-    valor_moto
-    valor_carro
-    valor_truck
-    valor_caminhao
-    peso_salvo
     peso
+    
+    VARPOS1			;VARIAVEL ARMAZENA NUMERO CONVERTIDO PARA COLOCAR NO LCD
+    VARPOS2			;VARIAVEL ARMAZENA NUMERO CONVERTIDO PARA COLOCAR NO LCD
+    NUMBIN
  endc
+ 
+STEP	EQU	.10			;decremento do CONVERTEBYTE
 
  org 0 
         
@@ -49,28 +49,17 @@
     movwf valor_veiculo
     movwf valor_teste
     movwf qtd_troco
-    
-    movlw .184
-    movwf valor_vazio
-    movlw .191
-    movwf valor_moto
-    movlw .197
-    movwf valor_carro
-    movlw .195
-    movwf valor_truck
-    movlw .203
-    movwf valor_caminhao
  
  ;DEFINIR SAIDAS
   BANCO1
     movlw b'11111110'
-    movwf TRISB
-    movlw b'11100000'
-    movwf TRISE
-    movlw b'00000000'
-    movwf TRISC
-    movlw b'00000000'
-    movwf TRISD
+    movwf TRISB             ; porta B é saída 
+    movlw b'11100000'       ; PSMODE = 0 para porta D ser I/O
+    movwf TRISE             ; bits 0 e 1 da porta E são saídas 
+    movlw b'00000000'       ; pinos configurados como digitais
+    movwf TRISC             ; bits 0 e 1 da porta E são saídas 
+    movlw b'00000000'       ; pinos configurados como digitais
+    movwf TRISD             ; bits 0 e 1 da porta E são saídas 
     
 ;DEFINIR ENTRADAS
     movlw b'11111111'
@@ -79,11 +68,11 @@
     movwf ADCON1
 
 ;CONFIGURACAO PRESCALER
-    movlw b'00000111'
+    movlw b'00000111'          ; timer 0 com clock interno e prescaler 256
     movwf OPTION_REG
  
   BANCO0 
-    movlw b'00110001'
+    movlw b'00110001'       ; timer 1 com clock interno e prescaler 8
     movwf T1CON
  
     call inicia_lcd
@@ -95,54 +84,60 @@
     bcf la
     
 inicio
+    movlw 0
+    movwf valor_salvo
     movlw b'01010001'
     movwf ADCON0
     call atraso_limpa_lcd
     
-    bsf ADCON0, GO_DONE
+    bsf ADCON0, GO_DONE           ;set bit 2 do adcon0 (GO/DONE)
+    
+;-----------balança--------------
+sensores_desativados
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LOOP INICIAL;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-SENSORES_DESATIVADOS ;3,7v ~ 3,8v = 3,7 = 189
-    BANCO0
-
-    bsf ADCON0, GO_DONE
-VOLTA_SENSORES_DESATIVADOS
+    bsf ADCON0, GO_DONE		  ;set bit 2 do adcon0 (GO/DONE)
+volta_sensores_desativados
     btfsc ADCON0, GO_DONE
-    goto VOLTA_SENSORES_DESATIVADOS
+    goto volta_sensores_desativados
+
 
     movfw ADRESH
     movwf peso
-       
-VERIFICA_VEICULOS
+
+; balança... peso
+verifica_veiculos
+
     movlw .180
     subwf peso, W
     call espera_1s
     btfss STATUS, C
-    goto SENSORES_DESATIVADOS
+    goto sensores_desativados
 
- ;compara moto
-    movlw .184
+    movlw .190
     subwf peso, W
     btfss STATUS, C
-    goto abrir_cancela
- ;compara carro
-    movlw .191
+    goto moto_isento
+
+    movlw .198
     subwf peso, W
     btfss STATUS, C
     goto seta_valor5
- ;compara carro3eixos
-    movlw .195
+
+    movlw .205
     subwf peso, W
     btfss STATUS, C
     goto seta_valor7
- ;compara carro4eixos
-    movlw .203
+
+    movlw .213
     subwf peso, W
     btfss STATUS, C
     goto seta_valor10
-    goto SENSORES_DESATIVADOS
+    goto sensores_desativados
 
-
+moto_isento
+    call limpa_lcd
+    call valor_isento
+    goto abrir_cancela
     
 seta_valor10
     call limpa_lcd
@@ -166,14 +161,20 @@ seta_valor5
     goto ler_valor_entrada
     
 ler_valor_entrada
-    btfsc n2
-    goto valor_entrada_2
-    goto ler_n5
+    BANCO1
+    movlw b'00000011'
+    movwf TRISD             ;D como ENTRADA
+    BANCO0
     
-ler_n5      
+    movlw 0
+    movwf valor_entrada
+    
+ler_valor_entrada_1
+    btfsc n2
+    goto valor_entrada_2     
     btfsc n5
     goto valor_entrada_5
-    goto ler_valor_entrada    
+    goto ler_valor_entrada_1    
  
 valor_entrada_2
     movlw 2
@@ -188,22 +189,37 @@ valor_entrada_5
     goto verifica_valor_entrada
  
 verifica_valor_entrada
-    movlw valor_entrada
-    addwf valor_salvo
-    subwf valor_veiculo
+    movf valor_entrada, W
+    addwf valor_salvo, W
+    movwf valor_salvo
+    movf valor_veiculo, W
+    subwf valor_salvo, W
     movwf valor_restante
-    movlw 0
-    movwf valor_entrada
-    movwf valor_restante
+    btfsc STATUS, Z
+    goto abrir_cancela
     btfsc STATUS, C
-    goto devolve_moedas
-    goto verifa_faltou_ou_abrir_cancela		    ; =0 ele vai para abrir cancela 
+    goto devolve_moeda
+    goto verifa_faltou_ou_abrir_cancela         ; =0 ele vai para abrir cancela ou verificar se faltou 
    
 verifa_faltou_ou_abrir_cancela
-    btfss STATUS, C
-    goto ler_valor_entrada
+    ;movwf valor_restante
+    ;btfsc STATUS, Z
+    ;goto abrir_cancela
+    btfsc STATUS, C
     goto abrir_cancela
+    goto ler_valor_entradaa
+    ;goto abrir_cancela
+    
+ler_valor_entradaa
+    BANCO1
+    movlw b'00000000'
+    movwf TRISD             ;D como SAIDA
+    BANCO0
+    call limpa_lcd
+    call valor_falta
+    goto ler_valor_entrada
    
+;-------Mensagens-------------
 valor_isento
     movlw 'M'
     call escreve_dado_lcd
@@ -338,6 +354,11 @@ valor_falta
     call escreve_dado_lcd
     movlw '$'
     call escreve_dado_lcd
+    MOVF	valor_restante, W	;
+    MOVWF	NUMBIN		;CONVERTE SEGUNDOS EM NUMERO BINÃRIO
+    CALL	CONVERTEBYTE;CONVERTE NUMERO EM UNIDADE E DEZENA PARA COLOCA-LO NO LCD.
+    MOVF	VARPOS2, W
+    call escreve_dado_lcd
     return
 
 msg_troco
@@ -356,6 +377,11 @@ msg_troco
     movlw 'R'
     call escreve_dado_lcd
     movlw '$'
+    call escreve_dado_lcd
+    MOVF	valor_restante,W	;
+    MOVWF	NUMBIN		;CONVERTE SEGUNDOS EM NUMERO BINÃRIO
+    CALL	CONVERTEBYTE;CONVERTE NUMERO EM UNIDADE E DEZENA PARA COLOCA-LO NO LCD.
+    MOVF	VARPOS2,W
     call escreve_dado_lcd
     return
 
@@ -389,21 +415,51 @@ msg_cancela_aberta
     movlw 'A'
     call escreve_dado_lcd
     return
+    
+CONVERTEBYTE
+;	ENTRAR COM AS VARIAVEIS A SEREM CONVERTIDAS
+;	NUMBIN É A VARIAVEL A SER CONVERTIDA, EM BINÃRIO
+;	VARPOS1 É A UNIDADE EM NUMERO DECIMAL
+; 	VARPOS2 É A DEZENA  EM NUMERO DECIMAL
+
+	clrf	VARPOS1
+	clrf	VARPOS2
+	movf	NUMBIN,W
+	movwf	VARPOS2
+
+CONVERTE1
+	movlw	STEP		;MOVE O VALOR MÃNIMO PARA W
+	subwf	VARPOS2,W	;SUBTRAI O VALOR DE W (10) DE VARPOS2
+	btfss	STATUS,C	;TESTA CARRY. RESULTADO NEGATIVO?
+	goto	CONVERTE2	;NÃO, ENTÃ?O CONTA >= MIN
+				;SIM, ENTÃO CONTA < MIN
+	movwf	VARPOS2
+	incf	VARPOS1,F		;
+	goto	CONVERTE1
+
+CONVERTE2						;FINAL DA CONVERSÃO.
+	movlw		0x30
+	addwf		VARPOS1,F		; AJUSTA P/ESCRITA EM CARACTER ASC II
+	addwf		VARPOS2,F		; AJUSTA P/ESCRITA EM CACACTER ASC II
+
+	return
+    
+    
  
  ;------ 1 segundo------
 espera_1s
  movlw 20
  movwf contador
- movlw 60		; valor para 196 contagens (50ms)
- movwf TMR0		; 256  -  196  = 60
+ movlw 60       ; valor para 196 contagens (50ms)
+ movwf TMR0     ; 256  -  196  = 60
 
 aguarda_estouro 
- btfss INTCON, TMR0IF	; espera timer0 estourar
+ btfss INTCON, TMR0IF   ; espera timer0 estourar
  goto aguarda_estouro
- movlw 60		; reprograma para 196 contagens (50ms)
- movwf TMR0		; 256  -  196  = 60
- bcf INTCON, TMR0IF	; limpa flag de estouro
- decfsz contador	; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
+ movlw 60       ; reprograma para 196 contagens (50ms)
+ movwf TMR0     ; 256  -  196  = 60
+ bcf INTCON, TMR0IF ; limpa flag de estouro
+ decfsz contador    ; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
  goto aguarda_estouro
  return
  
@@ -415,7 +471,7 @@ espera_2s
  movwf TMR0		; 256  -  196  = 60
 
 aguarda_estouro_2s 
- btfss INTCON, TMR0IF	; espera timer0 estourar
+ btfss INTCON, TMR0IF   ; espera timer0 estourar
  goto aguarda_estouro_2s
  movlw 60		; reprograma para 196 contagens (50ms)
  movwf TMR0		; 256  -  196  = 60
@@ -432,17 +488,25 @@ espera_4s
  movwf TMR0		; 256  -  196  = 60
 
 aguarda_estouro_4s 
- btfss INTCON, TMR0IF
+ btfss INTCON, TMR0IF   ; espera timer0 estourar
  goto aguarda_estouro_4s
  movlw 60		; reprograma para 196 contagens (50ms)
  movwf TMR0		; 256  -  196  = 60
- bcf INTCON, TMR0IF
- decfsz contador
+ bcf INTCON, TMR0IF	; limpa flag de estouro
+ decfsz contador	; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
  goto aguarda_estouro_4s
  return
  
 ;------------| PROCESSAMENTO DE TROCO |------------
-
+    
+devolve_moeda
+ BANCO1
+ movlw b'00000000'
+ movwf TRISD             ;D como SAIDA
+ BANCO0
+ call limpa_lcd
+ call msg_troco
+ 
 devolve_moedas
     bsf sm
     call espera_1s
@@ -451,20 +515,39 @@ devolve_moedas
     bsf lm
     call espera_1s
     bcf lm
-    incfsz valor_restante
+    call espera_1s
+    decfsz valor_restante
     goto devolve_moedas
-    call limpa_lcd
-    call msg_cancela_aberta
     goto abrir_cancela
  
  ;------------| ABRIR/FECHAR CANCELA |------------
 abrir_cancela
+    BANCO1
+    movlw b'00000000'
+    movwf TRISD             ;D como SAIDA
+    BANCO0
+    call espera_2s
     bsf ac
     call limpa_lcd
     call msg_cancela_aberta
-    call espera_4s
-	
+;-----------------------------
+sensores_ativados
+    bsf ADCON0, GO_DONE		  ;set bit 2 do adcon0 (GO/DONE)
+volta_sensores_ativados
+    btfsc ADCON0, GO_DONE
+    goto volta_sensores_ativados
+
+    movfw ADRESH
+    movwf peso
+
+    movlw .180
+    subwf peso, W
+    btfss STATUS, C
+    goto fechar_cancela
+    goto sensores_ativados
+;-----------------------------
 fechar_cancela
+    call espera_4s
     bcf ac
     call limpa_lcd
     call msg_bem_vindo
@@ -497,36 +580,36 @@ limpa_lcd
     return
  
 escreve_comando_lcd
-    bcf PORTE, RE0
+    bcf PORTE, RE0      ; Define dado no LCD(RS=1)
     movwf PORTD
-    bsf PORTE, RE1
-    bcf PORTE, RE1
+    bsf PORTE, RE1      ; ativar ENABLE do LCD
+    bcf PORTE, RE1      ; Desativar ENABLE do LCD
     call atraso_lcd
     return
  
 escreve_dado_lcd
-    bsf PORTE, RE0
+    bsf PORTE, RE0      ; Define dado no LCD(RS=1)
     movwf PORTD
-    bsf PORTE, RE1
-    bcf PORTE, RE1
+    bsf PORTE, RE1      ; ativar ENABLE do LCD
+    bcf PORTE, RE1      ; Desativar ENABLE do LCD
     call atraso_lcd
     return
  
-atraso_lcd
-    movlw 26
-    movwf contador
+atraso_lcd      ; Atraso de 40us para LCD
+    movlw 26        ;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
+    movwf contador  ; 4 clocks
 ret_atraso_lcd
-    decfsz contador
-    goto ret_atraso_lcd
+    decfsz contador ; 8 clocks (qndo da saltos é 8 clocks), este e o goto vai ser repetido N vezes
+    goto ret_atraso_lcd ; 4 clocks
     return
  
 atraso_limpa_lcd
-    movlw 40
-    movwf contador2
+    movlw 40        ;8clocks (pq ele deu um call então zero... começo do 0... o segundo ja é 4 clocks)
+    movwf contador2 ; 4 clocks
 ret_atraso_limpa_lcd
     call atraso_lcd
-    decfsz contador2	
-    goto ret_atraso_limpa_lcd	
+    decfsz contador2    
+    goto ret_atraso_limpa_lcd   
     return
  
  end
