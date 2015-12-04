@@ -78,7 +78,7 @@ endif
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/ProjetoPedagioPic.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
 MP_PROCESSOR_OPTION=16f877a
-MP_LINKER_DEBUG_OPTION=-r=ROM@0x1F00:0x1FFF -r=RAM@SHARE:0x70:0x70 -r=RAM@SHARE:0xF0:0xF0 -r=RAM@SHARE:0x170:0x170 -r=RAM@GPR:0x1E5:0x1EF -r=RAM@SHARE:0x1F0:0x1F0
+MP_LINKER_DEBUG_OPTION= 
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
@@ -86,7 +86,7 @@ ${OBJECTDIR}/ProjetoPedagioPic.o: ProjetoPedagioPic.asm  nbproject/Makefile-${CN
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/ProjetoPedagioPic.o.d 
 	@${RM} ${OBJECTDIR}/ProjetoPedagioPic.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/ProjetoPedagioPic.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/ProjetoPedagioPic.lst\\\" -e\\\"${OBJECTDIR}/ProjetoPedagioPic.err\\\" $(ASM_OPTIONS)   -o\\\"${OBJECTDIR}/ProjetoPedagioPic.o\\\" \\\"ProjetoPedagioPic.asm\\\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/ProjetoPedagioPic.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG  -q -p$(MP_PROCESSOR_OPTION) -u  -l\\\"${OBJECTDIR}/ProjetoPedagioPic.lst\\\" -e\\\"${OBJECTDIR}/ProjetoPedagioPic.err\\\" $(ASM_OPTIONS)   -o\\\"${OBJECTDIR}/ProjetoPedagioPic.o\\\" \\\"ProjetoPedagioPic.asm\\\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/ProjetoPedagioPic.o"
 	@${FIXDEPS} "${OBJECTDIR}/ProjetoPedagioPic.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -106,7 +106,7 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/ProjetoPedagioPic.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION)  -w -x -u_DEBUG -z__ICD2RAM=1 -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"   -z__MPLAB_BUILD=1  -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PICKIT2=1 $(MP_LINKER_DEBUG_OPTION) -odist/${CND_CONF}/${IMAGE_TYPE}/ProjetoPedagioPic.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}     
+	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION)  -w -x -u_DEBUG -z__ICD2RAM=1 -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"   -z__MPLAB_BUILD=1  -z__MPLAB_DEBUG=1 $(MP_LINKER_DEBUG_OPTION) -odist/${CND_CONF}/${IMAGE_TYPE}/ProjetoPedagioPic.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}     
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/ProjetoPedagioPic.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 

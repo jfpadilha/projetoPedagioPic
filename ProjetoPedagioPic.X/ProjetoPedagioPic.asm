@@ -1,3 +1,5 @@
+;balanca = 1
+;kit pedagio 3
     #include "p16f877a.inc"
 
 ; __config 0xFFBA
@@ -29,8 +31,7 @@
     valor_teste
     contador
     contador2
-    peso
-    
+    peso    
     VARPOS1			;VARIAVEL ARMAZENA NUMERO CONVERTIDO PARA COLOCAR NO LCD
     VARPOS2			;VARIAVEL ARMAZENA NUMERO CONVERTIDO PARA COLOCAR NO LCD
     NUMBIN
@@ -53,13 +54,13 @@ STEP	EQU	.10			;decremento do CONVERTEBYTE
  ;DEFINIR SAIDAS
   BANCO1
     movlw b'11111110'
-    movwf TRISB             ; porta B È saÌda 
-    movlw b'11100000'       ; PSMODE = 0 para porta D ser I/O
-    movwf TRISE             ; bits 0 e 1 da porta E s„o saÌdas 
-    movlw b'00000000'       ; pinos configurados como digitais
-    movwf TRISC             ; bits 0 e 1 da porta E s„o saÌdas 
-    movlw b'00000000'       ; pinos configurados como digitais
-    movwf TRISD             ; bits 0 e 1 da porta E s„o saÌdas 
+    movwf TRISB
+    movlw b'11100000'
+    movwf TRISE
+    movlw b'00000000'
+    movwf TRISC
+    movlw b'00000000'
+    movwf TRISD
     
 ;DEFINIR ENTRADAS
     movlw b'11111111'
@@ -68,11 +69,11 @@ STEP	EQU	.10			;decremento do CONVERTEBYTE
     movwf ADCON1
 
 ;CONFIGURACAO PRESCALER
-    movlw b'00000111'          ; timer 0 com clock interno e prescaler 256
+    movlw b'00000111'               ;timer 0 com clock interno e prescaler 256
     movwf OPTION_REG
  
   BANCO0 
-    movlw b'00110001'       ; timer 1 com clock interno e prescaler 8
+    movlw b'00110001'               ;timer 1 com clock interno e prescaler 8
     movwf T1CON
  
     call inicia_lcd
@@ -88,25 +89,19 @@ inicio
     movwf valor_salvo
     movlw b'01010001'
     movwf ADCON0
-    call atraso_limpa_lcd
-    
-    bsf ADCON0, GO_DONE           ;set bit 2 do adcon0 (GO/DONE)
+    call atraso_limpa_lcd    
+    bsf ADCON0, GO_DONE                 ;set bit 2 do adcon0 (GO/DONE)
     
 ;-----------balanÁa--------------
 sensores_desativados
-
-    bsf ADCON0, GO_DONE		  ;set bit 2 do adcon0 (GO/DONE)
+    bsf ADCON0, GO_DONE                 ;set bit 2 do adcon0 (GO/DONE)
 volta_sensores_desativados
     btfsc ADCON0, GO_DONE
     goto volta_sensores_desativados
-
-
     movfw ADRESH
     movwf peso
-
-; balanÁa... peso
+;-------- pesos ------------
 verifica_veiculos
-
     movlw .180
     subwf peso, W
     call espera_1s
@@ -163,26 +158,24 @@ seta_valor5
 ler_valor_entrada
     BANCO1
     movlw b'00000011'
-    movwf TRISD             ;D como ENTRADA
-    BANCO0
-    
+    movwf TRISD                     ;D como ENTRADA
+    BANCO0    
     movlw 0
     movwf valor_entrada
-    
-ler_valor_entrada_1
+ler_valor_entrada_repeat
     btfsc n2
-    goto valor_entrada_2     
+    goto definir_entrada_2
     btfsc n5
-    goto valor_entrada_5
-    goto ler_valor_entrada_1    
+    goto definir_entrada_5
+    goto ler_valor_entrada_repeat
  
-valor_entrada_2
+definir_entrada_2
     movlw 2
     movwf valor_entrada
     call espera_2s 
     goto verifica_valor_entrada
     
-valor_entrada_5
+definir_entrada_5
     movlw 5
     movwf valor_entrada
     call espera_2s 
@@ -207,10 +200,10 @@ verifa_faltou_ou_abrir_cancela
     ;goto abrir_cancela
     btfsc STATUS, C
     goto abrir_cancela
-    goto ler_valor_entradaa
+    goto ler_valor_entrada
     ;goto abrir_cancela
     
-ler_valor_entradaa
+ler_valor_entrada
     BANCO1
     movlw b'00000000'
     movwf TRISD             ;D como SAIDA
@@ -354,9 +347,9 @@ valor_falta
     call escreve_dado_lcd
     movlw '$'
     call escreve_dado_lcd
-    MOVF	valor_restante, W	;
-    MOVWF	NUMBIN		;CONVERTE SEGUNDOS EM NUMERO BIN√ÅRIO
-    CALL	CONVERTEBYTE;CONVERTE NUMERO EM UNIDADE E DEZENA PARA COLOCA-LO NO LCD.
+    MOVF	valor_restante, W
+    MOVWF	NUMBIN                      ;CONVERTE SEGUNDOS EM NUMERO BIN√ÅRIO
+    CALL	CONVERTEBYTE                ;CONVERTE NUMERO EM UNIDADE E DEZENA PARA COLOCA-LO NO LCD.
     MOVF	VARPOS2, W
     call escreve_dado_lcd
     return
@@ -378,9 +371,9 @@ msg_troco
     call escreve_dado_lcd
     movlw '$'
     call escreve_dado_lcd
-    MOVF	valor_restante,W	;
-    MOVWF	NUMBIN		;CONVERTE SEGUNDOS EM NUMERO BIN√ÅRIO
-    CALL	CONVERTEBYTE;CONVERTE NUMERO EM UNIDADE E DEZENA PARA COLOCA-LO NO LCD.
+    MOVF	valor_restante,W
+    MOVWF	NUMBIN                      ;CONVERTE SEGUNDOS EM NUMERO BIN√ÅRIO
+    CALL	CONVERTEBYTE                ;CONVERTE NUMERO EM UNIDADE E DEZENA PARA COLOCA-LO NO LCD.
     MOVF	VARPOS2,W
     call escreve_dado_lcd
     return
@@ -442,70 +435,66 @@ CONVERTE2						;FINAL DA CONVERS√O.
 	addwf		VARPOS1,F		; AJUSTA P/ESCRITA EM CARACTER ASC II
 	addwf		VARPOS2,F		; AJUSTA P/ESCRITA EM CACACTER ASC II
 
-	return
-    
+	return    
     
  
  ;------ 1 segundo------
 espera_1s
- movlw 20
- movwf contador
- movlw 60       ; valor para 196 contagens (50ms)
- movwf TMR0     ; 256  -  196  = 60
+    movlw 20
+    movwf contador
+    movlw 60       ; valor para 196 contagens (50ms)
+    movwf TMR0     ; 256  -  196  = 60
 
 aguarda_estouro 
- btfss INTCON, TMR0IF   ; espera timer0 estourar
- goto aguarda_estouro
- movlw 60       ; reprograma para 196 contagens (50ms)
- movwf TMR0     ; 256  -  196  = 60
- bcf INTCON, TMR0IF ; limpa flag de estouro
- decfsz contador    ; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
- goto aguarda_estouro
- return
+    btfss INTCON, TMR0IF   ; espera timer0 estourar
+    goto aguarda_estouro
+    movlw 60       ; reprograma para 196 contagens (50ms)
+    movwf TMR0     ; 256  -  196  = 60
+    bcf INTCON, TMR0IF ; limpa flag de estouro
+    decfsz contador    ; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
+    goto aguarda_estouro
+    return
  
   ;------ 2 segundo pisca led------
 espera_2s
- movlw 40
- movwf contador
- movlw 60		; valor para 196 contagens (50ms)
- movwf TMR0		; 256  -  196  = 60
-
+    movlw 40
+    movwf contador
+    movlw 60		; valor para 196 contagens (50ms)
+    movwf TMR0		; 256  -  196  = 60
 aguarda_estouro_2s 
- btfss INTCON, TMR0IF   ; espera timer0 estourar
- goto aguarda_estouro_2s
- movlw 60		; reprograma para 196 contagens (50ms)
- movwf TMR0		; 256  -  196  = 60
- bcf INTCON, TMR0IF	; limpa flag de estouro
- decfsz contador	; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
- goto aguarda_estouro_2s
- return
+    btfss INTCON, TMR0IF   ; espera timer0 estourar
+    goto aguarda_estouro_2s
+    movlw 60		; reprograma para 196 contagens (50ms)
+    movwf TMR0		; 256  -  196  = 60
+    bcf INTCON, TMR0IF	; limpa flag de estouro
+    decfsz contador	; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
+    goto aguarda_estouro_2s
+    return
  
   ;------ 4 segundo ------
 espera_4s
- movlw 80
- movwf contador
- movlw 60		; valor para 196 contagens (50ms)
- movwf TMR0		; 256  -  196  = 60
-
+    movlw 80
+    movwf contador
+    movlw 60		; valor para 196 contagens (50ms)
+    movwf TMR0		; 256  -  196  = 60
 aguarda_estouro_4s 
- btfss INTCON, TMR0IF   ; espera timer0 estourar
- goto aguarda_estouro_4s
- movlw 60		; reprograma para 196 contagens (50ms)
- movwf TMR0		; 256  -  196  = 60
- bcf INTCON, TMR0IF	; limpa flag de estouro
- decfsz contador	; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
- goto aguarda_estouro_4s
- return
+    btfss INTCON, TMR0IF   ; espera timer0 estourar
+    goto aguarda_estouro_4s
+    movlw 60		; reprograma para 196 contagens (50ms)
+    movwf TMR0		; 256  -  196  = 60
+    bcf INTCON, TMR0IF	; limpa flag de estouro
+    decfsz contador	; aguarda 20 ocorrencias ( 20 x 50ms = 1s)
+    goto aguarda_estouro_4s
+    return
  
-;------------| PROCESSAMENTO DE TROCO |------------
-    
+;------------| PROCESSAMENTO DE TROCO |------------    
 devolve_moeda
- BANCO1
- movlw b'00000000'
- movwf TRISD             ;D como SAIDA
- BANCO0
- call limpa_lcd
- call msg_troco
+    BANCO1
+    movlw b'00000000'
+    movwf TRISD             ;D como SAIDA
+    BANCO0
+    call limpa_lcd
+    call msg_troco
  
 devolve_moedas
     bsf sm
